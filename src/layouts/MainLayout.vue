@@ -10,10 +10,8 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-      </q-list>
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered :width="250">
+      <sidebar-component />
     </q-drawer>
 
     <q-page-container>
@@ -24,6 +22,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+
+import { SidebarComponent } from 'src/components';
 
 const leftDrawerOpen = ref(false);
 
