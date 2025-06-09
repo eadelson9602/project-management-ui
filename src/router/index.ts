@@ -1,10 +1,12 @@
-import { defineRouter } from '#q-app/wrappers';
+import { route } from 'quasar/wrappers';
 import {
   createMemoryHistory,
   createRouter,
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
+import { LocalStorage } from 'quasar';
+
 import routes from './routes';
 
 /*
@@ -16,10 +18,12 @@ import routes from './routes';
  * with the Router instance.
  */
 
-export default defineRouter(function (/* { store, ssrContext } */) {
+export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
+    : process.env.VUE_ROUTER_MODE === 'history'
+      ? createWebHistory
+      : createWebHashHistory;
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -29,6 +33,28 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  // Hacemos beforeach del router para saber que páginas requiren autenticación
+  Router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth); //Con esto sabemos si la ruta visitada requiere autenticación
+    // const isLogged = store.state.auth.isLogged //Con esto sabemos si el usuario esta logueado
+    /* eslint-disable */
+    let token = LocalStorage.getItem('token');
+    if (
+      (!requiresAuth && token && to.path === '/login') ||
+      (requiresAuth && token && to.path === '/')
+    ) {
+      return next('/inicio');
+    }
+
+    setTimeout(() => {
+      if (requiresAuth && !token) {
+        next('/login');
+      } else {
+        next();
+      }
+    }, 200);
   });
 
   return Router;
