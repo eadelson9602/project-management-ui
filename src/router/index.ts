@@ -6,6 +6,7 @@ import {
   createWebHistory,
 } from 'vue-router';
 import { LocalStorage } from 'quasar';
+import { decryptedAES } from 'src/helpers';
 
 import routes from './routes';
 
@@ -40,12 +41,14 @@ export default route(function (/* { store, ssrContext } */) {
     const requiresAuth = to.matched.some((record) => record.meta.requiresAuth); //Con esto sabemos si la ruta visitada requiere autenticación
     // const isLogged = store.state.auth.isLogged //Con esto sabemos si el usuario esta logueado
     /* eslint-disable */
-    let token = LocalStorage.getItem('token');
+    let tokenEncrypt = LocalStorage.getItem('token') as unknown as string;
+    let token = tokenEncrypt ? decryptedAES(tokenEncrypt) : '';
+
     if (
       (!requiresAuth && token && to.path === '/login') ||
       (requiresAuth && token && to.path === '/')
     ) {
-      return next('/inicio');
+      return next('/home');
     }
 
     setTimeout(() => {

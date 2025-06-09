@@ -54,9 +54,11 @@ export default defineConfig((ctx) => {
       // publicPath: '/',
       // analyze: true,
       env: {
-        __URLAPI__: process.env.__URLAPI__,
-        JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-        JWT_IV: process.env.JWT_IV,
+        __URLAPI__: 'http://localhost:3000/api',
+        JWT_SECRET_KEY:
+          'a8de87090d25aad5d7d66630d1dfbf57f1d9228b6871bd1dfc4fb7cf5b84889ebd895f3701ef1c26d740ccf499f7260a1d6c14a50f02b8e5c5230bd181cca521',
+        JWT_IV:
+          'a8de87090d25aad5d7d66630d1dfbf57f1d9228b6871bd1dfc4fb7cf5b84889ebd895f3701ef1c26d740ccf499f7260a1d6c14a50f02b8e5c5230bd181cca521',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

@@ -127,7 +127,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
 import type { Project } from '../../models/project.models';
-import type { User } from '../../models/user.models';
+// import type { User } from '../../models/user.models';
 import { projectRequest } from 'src/request';
 import { controlError } from 'src/helpers/controlError';
 
@@ -168,19 +168,19 @@ const editForm = ref<Project>({
 const statusOptions = ['pendiente', 'en_progreso', 'completado', 'cancelado'];
 const priorityOptions = ['baja', 'media', 'alta', 'urgente'];
 
-const taskColumns = [
-  { name: 'title', label: 'Título', field: 'title', sortable: true },
-  { name: 'status', label: 'Estado', field: 'status', sortable: true },
-  { name: 'priority', label: 'Prioridad', field: 'priority', sortable: true },
-  { name: 'developer', label: 'Desarrollador', field: 'developerId', sortable: true },
-  { name: 'dueDate', label: 'Fecha límite', field: 'dueDate', sortable: true },
-];
+// const taskColumns = [
+//   { name: 'title', label: 'Título', field: 'title', sortable: true },
+//   { name: 'status', label: 'Estado', field: 'status', sortable: true },
+//   { name: 'priority', label: 'Prioridad', field: 'priority', sortable: true },
+//   { name: 'developer', label: 'Desarrollador', field: 'developerId', sortable: true },
+//   { name: 'dueDate', label: 'Fecha límite', field: 'dueDate', sortable: true },
+// ];
 
-const developerColumns = [
-  { name: 'name', label: 'Nombre', field: 'name', sortable: true },
-  { name: 'email', label: 'Email', field: 'email', sortable: true },
-  { name: 'role', label: 'Rol', field: 'role', sortable: true },
-];
+// const developerColumns = [
+//   { name: 'name', label: 'Nombre', field: 'name', sortable: true },
+//   { name: 'email', label: 'Email', field: 'email', sortable: true },
+//   { name: 'role', label: 'Rol', field: 'role', sortable: true },
+// ];
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -197,33 +197,31 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getTaskStatusColor = (status: string) => {
-  switch (status) {
-    case 'pendiente':
-      return 'warning';
-    case 'en_progreso':
-      return 'info';
-    case 'completado':
-      return 'positive';
-    case 'cancelado':
-      return 'negative';
-    default:
-      return 'grey';
-  }
-};
+// const getTaskStatusColor = (status: string) => {
+//   switch (status) {
+//     case 'pendiente':
+//       return 'warning';
+//     case 'en_progreso':
+//       return 'info';
+//     case 'completado':
+//       return 'positive';
+//     case 'cancelado':
+//       return 'negative';
+//     default:
+//       return 'grey';
+//   }
+// };
 
-const getDeveloperName = (developerId: string) => {
-  const developer = project.value.developers?.find((d: User) => d.id === developerId);
-  return developer ? developer.name : '';
-};
+// const getDeveloperName = (developerId: string) => {
+//   const developer = project.value.developers?.find((d: User) => d.id === developerId);
+//   return developer ? developer.name : '';
+// };
 
-const fetchProject = async () => {
+const fetchProject = () => {
   loading.value = true;
   try {
     // TODO: Replace with actual API call
-    const response = await projectRequest.getProjectById(route.params.id as string);
-    const data = response;
-    project.value = data;
+    console.log(route.params.id);
   } catch (error) {
     controlError(error);
   } finally {
@@ -272,7 +270,7 @@ const deleteProject = async () => {
 };
 
 // Load project data on mount
-onMounted(async () => {
-  await fetchProject();
+onMounted(() => {
+  fetchProject();
 });
 </script>

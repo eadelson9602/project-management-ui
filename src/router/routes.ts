@@ -3,19 +3,28 @@ import type { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   // Public routes
   {
-    path: '/login',
-    component: () => import('pages/auth/LoginPage.vue'),
-    meta: { public: true },
-  },
-  {
-    path: '/register',
-    component: () => import('pages/auth/RegisterPage.vue'),
-    meta: { public: true },
-  },
-  {
-    path: '/password/reset',
-    component: () => import('pages/auth/PasswordResetPage.vue'),
-    meta: { public: true },
+    path: '/auth',
+    component: () => import('layouts/AuthLayout.vue'),
+    children: [
+      {
+        path: '/login',
+        name: 'login',
+        component: () => import('pages/auth/LoginPage.vue'),
+        meta: { public: true },
+      },
+      {
+        path: '/register',
+        name: 'register',
+        component: () => import('pages/auth/RegisterPage.vue'),
+        meta: { public: true },
+      },
+      {
+        path: '/password_reset',
+        name: 'password_reset',
+        component: () => import('pages/auth/PasswordResetPage.vue'),
+        meta: { public: true },
+      },
+    ],
   },
 
   // Protected routes
@@ -25,13 +34,13 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
     children: [
       {
-        path: 'inicio',
-        name: 'dashboard',
+        path: 'home',
+        name: 'home',
         component: () => import('pages/DashboardPage.vue'),
         meta: {
           title: 'Dashboard',
           roles: ['admin', 'manager', 'developer'],
-          breadcrumb: [{ text: 'Dashboard', to: '/' }],
+          meta: { requiresAuth: true },
         },
       },
       {
@@ -40,8 +49,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/projects/ProjectListPage.vue'),
         meta: {
           title: 'Proyectos',
+          requiresAuth: true,
           roles: ['admin', 'manager', 'developer'],
-          breadcrumb: [{ text: 'Proyectos', to: '/projects' }],
         },
       },
       {
@@ -50,11 +59,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/projects/ProjectDetailPage.vue'),
         meta: {
           title: 'Detalles del Proyecto',
+          requiresAuth: true,
           roles: ['admin', 'manager', 'developer'],
-          breadcrumb: [
-            { text: 'Proyectos', to: '/projects' },
-            { text: 'Detalles', to: '/projects/:id' },
-          ],
         },
       },
       {
@@ -63,11 +69,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/projects/ProjectsPage.vue'),
         meta: {
           title: 'Projects',
+          requiresAuth: true,
           roles: ['admin', 'manager'],
-          breadcrumb: [
-            { text: 'Dashboard', to: '/' },
-            { text: 'Projects', to: '/projects' },
-          ],
         },
       },
       {
@@ -76,11 +79,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/tasks/TasksPage.vue'),
         meta: {
           title: 'Tasks',
+          requiresAuth: true,
           roles: ['admin', 'manager', 'developer'],
-          breadcrumb: [
-            { text: 'Dashboard', to: '/' },
-            { text: 'Tasks', to: '/tasks' },
-          ],
         },
       },
       {
@@ -89,11 +89,8 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/auth/ProfilePage.vue'),
         meta: {
           title: 'Profile',
+          requiresAuth: true,
           roles: ['admin', 'manager', 'developer'],
-          breadcrumb: [
-            { text: 'Dashboard', to: '/' },
-            { text: 'Profile', to: '/profile' },
-          ],
         },
       },
     ],

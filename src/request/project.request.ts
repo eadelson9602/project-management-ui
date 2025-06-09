@@ -1,26 +1,17 @@
 import { api } from 'boot/axios';
-import { useQuasar, LocalStorage } from 'quasar';
 import type { Filter } from '../models/filter.models';
 import type { Project } from '../models/project.models';
-
-const $q = useQuasar();
+import { errorHandler } from 'src/helpers/';
 
 export const projectRequest = {
   getProjects: async (params: Filter) => {
     try {
       const response = await api.get('/projects', {
-        params: {
-          ...params,
-          token: LocalStorage.getItem('token'),
-        },
+        params,
       });
       return response.data;
     } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: 'Error al obtener proyectos',
-      });
-      throw error;
+      errorHandler(error);
     }
   },
 
@@ -29,11 +20,7 @@ export const projectRequest = {
       const response = await api.get<Project>(`/projects/${id}`);
       return response.data;
     } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: 'Error al obtener el proyecto',
-      });
-      throw error;
+      errorHandler(error);
     }
   },
 
@@ -47,11 +34,7 @@ export const projectRequest = {
       });
       return response.data;
     } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: 'Error al crear el proyecto',
-      });
-      throw error;
+      errorHandler(error);
     }
   },
 
@@ -65,11 +48,7 @@ export const projectRequest = {
       });
       return response.data;
     } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: 'Error al actualizar el proyecto',
-      });
-      throw error;
+      errorHandler(error);
     }
   },
 
@@ -77,11 +56,7 @@ export const projectRequest = {
     try {
       await api.delete(`/projects/${id}`);
     } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: 'Error al eliminar el proyecto',
-      });
-      throw error;
+      errorHandler(error);
     }
   },
 
@@ -91,11 +66,7 @@ export const projectRequest = {
         developerId,
       });
     } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: 'Error al asignar desarrollador',
-      });
-      throw error;
+      errorHandler(error);
     }
   },
 
@@ -103,11 +74,7 @@ export const projectRequest = {
     try {
       await api.delete(`/projects/${id}/developers/${developerId}`);
     } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: 'Error al remover desarrollador',
-      });
-      throw error;
+      errorHandler(error);
     }
   },
 };
