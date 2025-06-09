@@ -13,3 +13,16 @@ export interface Task {
   projectId: string;
   createdAt: string;
 }
+
+export interface TaskTableRequestProps {
+  pagination: {
+    page: number;
+    rowsPerPage: number;
+    sortBy?: string;
+    descending?: boolean;
+    sortOrder?: string;
+    rowsNumber?: number;
+  };
+  filter?: Record<string, unknown>;
+  getCellValue?: (col: Record<string, unknown>, row: Record<string, unknown>) => unknown;
+}

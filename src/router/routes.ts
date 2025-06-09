@@ -47,7 +47,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'projects',
         name: 'projects',
-        component: () => import('pages/projects/ProjectListPage.vue'),
+        component: () => import('pages/projects/ProjectsPage.vue'),
         meta: {
           title: 'Proyectos',
           requiresAuth: true,
@@ -55,7 +55,7 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: 'projects/:id',
+        path: 'projects_manage/:id',
         name: 'project-detail',
         component: () => import('pages/projects/ProjectDetailPage.vue'),
         meta: {
@@ -63,6 +63,7 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: true,
           roles: ['admin', 'manager', 'developer'],
         },
+        props: true,
       },
       {
         path: '/tasks',
@@ -91,7 +92,17 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: 'Users',
           requiresAuth: true,
-          roles: ['admin', 'manager', 'developer'],
+          roles: ['admin', 'manager'],
+        },
+      },
+      {
+        path: '/users/manage',
+        name: 'users_manage',
+        component: () => import('pages/user/ManageUserPage.vue'),
+        meta: {
+          title: 'Users',
+          requiresAuth: true,
+          roles: ['admin', 'manager'],
         },
       },
     ],

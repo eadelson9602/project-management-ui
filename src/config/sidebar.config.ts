@@ -21,7 +21,7 @@ export const sidebarConfig = {
         },
         {
           name: 'Gestión de Proyectos',
-          path: '/projects/manage',
+          path: '/projects_manage/',
           roles: ['admin', 'manager'],
         },
       ],

@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <q-card class="q-mb-md">
+    <q-card class="q-mb-md" flat>
       <q-card-section>
         <div class="text-subtitle1">Información del proyecto</div>
         <div class="row q-col-gutter-md">
@@ -44,10 +44,16 @@
 
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="tasks">
-        <!-- <q-table :rows="project.tasks" :columns="taskColumns" row-key="id" :loading="loading">
+        <q-table
+          flat
+          :rows="project.tasks || []"
+          :columns="taskColumns"
+          row-key="id"
+          :loading="loading"
+        >
           <template v-slot:body-cell-status="props">
             <q-td :props="props">
-              <q-badge :color="getTaskStatusColor(props.row.status)">
+              <q-badge :color="getStatusColor(props.row.status)">
                 {{ props.row.status }}
               </q-badge>
             </q-td>
@@ -57,16 +63,17 @@
               {{ getDeveloperName(props.row.developerId) }}
             </q-td>
           </template>
-        </q-table> -->
+        </q-table>
       </q-tab-panel>
 
       <q-tab-panel name="developers">
-        <!-- <q-table
-          :rows="project.developers"
+        <q-table
+          :rows="project.developers || []"
           :columns="developerColumns"
           row-key="id"
           :loading="loading"
-        /> -->
+          flat
+        />
       </q-tab-panel>
     </q-tab-panels>
 
@@ -88,8 +95,20 @@
                 :rules="[(val) => !!val || 'Campo requerido']"
               />
               <q-input v-model="editForm.description" label="Descripción" type="textarea" />
-              <q-select v-model="editForm.status" :options="statusOptions" label="Estado" />
-              <q-select v-model="editForm.priority" :options="priorityOptions" label="Prioridad" />
+              <q-select
+                v-model="editForm.status"
+                :options="statusOptions"
+                label="Estado"
+                emit-value
+                map-options
+              />
+              <q-select
+                v-model="editForm.priority"
+                :options="priorityOptions"
+                label="Prioridad"
+                emit-value
+                map-options
+              />
               <q-input
                 v-model="editForm.startDate"
                 label="Fecha de inicio"
@@ -124,22 +143,23 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { useQuasar } from 'quasar';
+import { useRoute, useRouter } from 'vue-router';
+import { useQuasar, Dialog } from 'quasar';
+import { projectRequest } from '../../request';
+import { controlError } from '../../helpers';
 import type { Project } from '../../models/project.models';
-// import type { User } from '../../models/user.models';
-import { projectRequest } from 'src/request';
-import { controlError } from 'src/helpers/controlError';
+import type { User } from '../../models/user.models';
 
 const $q = useQuasar();
 const route = useRoute();
+const router = useRouter();
 
 const project = ref<Project>({
   id: '',
   name: '',
   description: '',
-  status: 'pendiente',
-  priority: 'media',
+  status: 'todo',
+  priority: 'medium',
   startDate: '',
   endDate: '',
   managerId: '',
@@ -156,8 +176,8 @@ const editForm = ref<Project>({
   id: '',
   name: '',
   description: '',
-  status: 'pendiente',
-  priority: 'media',
+  status: 'todo',
+  priority: 'medium',
   startDate: '',
   endDate: '',
   managerId: '',
@@ -165,22 +185,49 @@ const editForm = ref<Project>({
   developers: [],
 });
 
-const statusOptions = ['pendiente', 'en_progreso', 'completado', 'cancelado'];
-const priorityOptions = ['baja', 'media', 'alta', 'urgente'];
+const statusOptions = [
+  { label: 'Pendiente', value: 'todo' },
+  { label: 'En progreso', value: 'in_progress' },
+  { label: 'Completado', value: 'done' },
+  { label: 'Revision', value: 'review' },
+];
+const priorityOptions = [
+  {
+    label: 'Alta',
+    value: 'high',
+  },
+  {
+    label: 'Media',
+    value: 'medium',
+  },
+  {
+    label: 'Baja',
+    value: 'low',
+  },
+];
 
-// const taskColumns = [
-//   { name: 'title', label: 'Título', field: 'title', sortable: true },
-//   { name: 'status', label: 'Estado', field: 'status', sortable: true },
-//   { name: 'priority', label: 'Prioridad', field: 'priority', sortable: true },
-//   { name: 'developer', label: 'Desarrollador', field: 'developerId', sortable: true },
-//   { name: 'dueDate', label: 'Fecha límite', field: 'dueDate', sortable: true },
-// ];
+const taskColumns = [
+  { name: 'name', label: 'Nombre', field: 'title', align: 'left' as const },
+  { name: 'description', label: 'Decripción', field: 'description', align: 'left' as const },
+  { name: 'status', label: 'Estado', field: 'status', align: 'left' as const },
+  { name: 'developer', label: 'Desarrollador', field: 'developerId', align: 'left' as const },
+  { name: 'startDate', label: 'Inicio', field: 'startDate', align: 'left' as const },
+  { name: 'priority', label: 'Prioridad', field: 'priority', align: 'left' as const },
+  {
+    name: 'estimatedHours',
+    label: 'Horas estimadas',
+    field: 'estimatedHours',
+    align: 'left' as const,
+  },
+  { name: 'actualHours', label: 'Hora actual', field: 'actualHours', align: 'left' as const },
+  { name: 'dueDate', label: 'Fin', field: 'dueDate', align: 'left' as const },
+];
 
-// const developerColumns = [
-//   { name: 'name', label: 'Nombre', field: 'name', sortable: true },
-//   { name: 'email', label: 'Email', field: 'email', sortable: true },
-//   { name: 'role', label: 'Rol', field: 'role', sortable: true },
-// ];
+const developerColumns = [
+  { name: 'name', label: 'Nombre', field: 'name', align: 'left' as const },
+  { name: 'email', label: 'Email', field: 'email', align: 'left' as const },
+  { name: 'role', label: 'Rol', field: 'role', align: 'left' as const },
+];
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -197,31 +244,69 @@ const getStatusColor = (status: string) => {
   }
 };
 
-// const getTaskStatusColor = (status: string) => {
-//   switch (status) {
-//     case 'pendiente':
-//       return 'warning';
-//     case 'en_progreso':
-//       return 'info';
-//     case 'completado':
-//       return 'positive';
-//     case 'cancelado':
-//       return 'negative';
-//     default:
-//       return 'grey';
-//   }
-// };
-
-// const getDeveloperName = (developerId: string) => {
-//   const developer = project.value.developers?.find((d: User) => d.id === developerId);
-//   return developer ? developer.name : '';
-// };
-
-const fetchProject = () => {
+const fetchProject = async () => {
   loading.value = true;
   try {
-    // TODO: Replace with actual API call
-    console.log(route.params.id);
+    const id = route.params.id as string | undefined;
+    if (!id) {
+      // Si no hay id, mostrar dialog para seleccionar proyecto
+      await showProjectSelectionDialog();
+      return;
+    }
+    const response = await projectRequest.getProjectById(id);
+    if (!response) {
+      $q.notify({ type: 'negative', message: 'Proyecto no encontrado.' });
+      await router.replace({ name: 'projects' });
+      return;
+    }
+    project.value = response;
+  } catch (error) {
+    controlError(error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const showProjectSelectionDialog = async () => {
+  try {
+    loading.value = true;
+    const allProjects = await projectRequest.getProjects({ page: 1, limit: 100 });
+    const options = (allProjects.data || []).map((p: Project) => ({
+      label: p.name,
+      value: p.id,
+    }));
+
+    if (!options.length) {
+      $q.notify({ type: 'negative', message: 'No hay proyectos disponibles.' });
+      await router.replace({ name: 'projects' });
+      return;
+    }
+
+    Dialog.create({
+      title: 'Selecciona un proyecto',
+      message: 'No se proporcionó un ID de proyecto. Por favor selecciona uno:',
+      options: {
+        type: 'radio',
+        model: options[0].value,
+        items: options,
+      },
+      cancel: true,
+      persistent: true,
+      ok: {
+        label: 'Ir al proyecto',
+        color: 'primary',
+      },
+    })
+      .onOk((selectedId: string) => {
+        if (selectedId) {
+          void router.replace({ name: 'project-detail', params: { id: selectedId } });
+        } else {
+          void router.replace({ name: 'projects' });
+        }
+      })
+      .onCancel(() => {
+        void router.replace({ name: 'projects' });
+      });
   } catch (error) {
     controlError(error);
   } finally {
@@ -242,6 +327,7 @@ const saveProject = async () => {
       message: 'Proyecto actualizado exitosamente',
     });
     showEditDialog.value = false;
+    await fetchProject();
   } catch (error) {
     controlError(error);
   }
@@ -258,19 +344,22 @@ const deleteProject = async () => {
       type: 'positive',
       message: 'Proyecto eliminado exitosamente',
     });
-    // Navigate back to project list
     $q.notify({
       type: 'positive',
       message: 'Redirigiendo...',
     });
-    // TODO: Add navigation
+    await router.replace({ name: 'projects' });
   } catch (error) {
     controlError(error);
   }
 };
 
-// Load project data on mount
-onMounted(() => {
-  fetchProject();
+const getDeveloperName = (developerId: string) => {
+  const dev = project.value.developers?.find((d: User) => d.id === developerId);
+  return dev ? dev.name : 'Sin asignar';
+};
+
+onMounted(async () => {
+  await fetchProject();
 });
 </script>

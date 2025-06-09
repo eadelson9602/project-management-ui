@@ -11,7 +11,8 @@ export const authRequest = {
       if (response.data.token) {
         LocalStorage.set('token', encryptedAES(response.data.token));
         LocalStorage.set('userAuth', encryptJSON(response.data as unknown as JSON));
-        api.defaults.headers.common['x-access-token'] = response.data.token;
+
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       }
       return response.data;
     } catch (error: unknown) {

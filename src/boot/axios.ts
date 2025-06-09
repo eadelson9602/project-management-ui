@@ -1,7 +1,7 @@
 import { defineBoot } from '#q-app/wrappers';
 import axios, { type AxiosInstance } from 'axios';
 import { LocalStorage } from 'quasar';
-import { decryptedAES } from 'src/helpers/';
+import { decryptedAES } from '../helpers/';
 
 declare module 'vue' {
   interface ComponentCustomProperties {
@@ -23,7 +23,7 @@ export default defineBoot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
   const token = LocalStorage.getItem('token') as unknown as string;
 
-  api.defaults.headers.common['x-access-token'] = token ? decryptedAES(token) : '';
+  api.defaults.headers.common['Authorization'] = `Bearer ${token ? decryptedAES(token) : ''}`;
 
   app.config.globalProperties.$axios = axios;
   // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)

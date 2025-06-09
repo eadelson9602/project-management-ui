@@ -20,7 +20,8 @@ export const controlError = (e: any) => {
             message: 'Cerrando sesión...',
           });
           setTimeout(() => {
-            LocalStorage.remove('dataUsuario');
+            LocalStorage.remove('userAuth');
+            LocalStorage.remove('authStore');
             LocalStorage.remove('token');
             Loading.hide();
             location.reload();

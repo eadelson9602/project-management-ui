@@ -1,7 +1,7 @@
 import { api } from 'boot/axios';
 import type { Filter } from '../models/filter.models';
 import type { Project } from '../models/project.models';
-import { errorHandler } from 'src/helpers/';
+import { errorHandler } from '../helpers/';
 
 export const projectRequest = {
   getProjects: async (params: Filter) => {
@@ -17,7 +17,7 @@ export const projectRequest = {
 
   getProjectById: async (id: string) => {
     try {
-      const response = await api.get<Project>(`/projects/${id}`);
+      const response = await api.get<Project>(`/projects/find/${id}`);
       return response.data;
     } catch (error) {
       errorHandler(error);
@@ -40,7 +40,7 @@ export const projectRequest = {
 
   updateProject: async (project: Project) => {
     try {
-      const response = await api.patch<Project>(`/projects/${project.id}`, {
+      const response = await api.patch<Project>(`/projects/update/`, {
         ...project,
         startDate: project.startDate.toString(),
         endDate: project.endDate.toString(),
@@ -54,7 +54,7 @@ export const projectRequest = {
 
   deleteProject: async (id: string) => {
     try {
-      await api.delete(`/projects/${id}`);
+      await api.delete(`/projects/remove/${id}`);
     } catch (error) {
       errorHandler(error);
     }
