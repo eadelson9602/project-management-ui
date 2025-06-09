@@ -106,7 +106,7 @@ import { LocalStorage } from 'quasar';
 import { encryptedAES, controlError } from '../../helpers';
 import { authRequest } from '../../request';
 import { useQuasar } from 'quasar';
-import type { User } from 'src/models/user.models';
+import type { User } from '../../models/user.models';
 
 const router = useRouter();
 const $q = useQuasar();

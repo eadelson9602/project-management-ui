@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { authGuard } from './guards/auth.guard';
 
 const routes: RouteRecordRaw[] = [
   // Public routes
@@ -40,7 +41,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: 'Dashboard',
           roles: ['admin', 'manager', 'developer'],
-          meta: { requiresAuth: true },
+          requiresAuth: true,
         },
       },
       {
@@ -64,16 +65,6 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: '/projects',
-        name: 'projects',
-        component: () => import('pages/projects/ProjectsPage.vue'),
-        meta: {
-          title: 'Projects',
-          requiresAuth: true,
-          roles: ['admin', 'manager'],
-        },
-      },
-      {
         path: '/tasks',
         name: 'tasks',
         component: () => import('pages/tasks/TasksPage.vue'),
@@ -93,14 +84,32 @@ const routes: RouteRecordRaw[] = [
           roles: ['admin', 'manager', 'developer'],
         },
       },
+      {
+        path: '/users',
+        name: 'users',
+        component: () => import('pages/user/UsersPage.vue'),
+        meta: {
+          title: 'Users',
+          requiresAuth: true,
+          roles: ['admin', 'manager', 'developer'],
+        },
+      },
     ],
   },
 
   // Error pages
   {
     path: '/unauthorized',
-    component: () => import('pages/ErrorUnauthorized.vue'),
+    name: 'unauthorized',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '/',
+        component: () => import('pages/ErrorUnauthorized.vue'),
+      },
+    ],
     meta: { public: true },
+    beforeEnter: authGuard,
   },
   {
     path: '/:catchAll(.*)*',

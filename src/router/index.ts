@@ -6,7 +6,8 @@ import {
   createWebHistory,
 } from 'vue-router';
 import { LocalStorage } from 'quasar';
-import { decryptedAES } from 'src/helpers';
+import { decryptedAES } from '../helpers';
+import { useAuthStore } from '../stores/auth';
 
 import routes from './routes';
 
@@ -49,6 +50,23 @@ export default route(function (/* { store, ssrContext } */) {
       (requiresAuth && token && to.path === '/')
     ) {
       return next('/home');
+    }
+
+    const authStore = useAuthStore();
+
+    // Si la ruta requiere autenticación
+    if (to.meta.requiresAuth) {
+      if (!authStore.isAuthenticated) {
+        return next({ name: 'login' });
+      }
+
+      // Si la ruta requiere roles específicos
+      if (to.meta.roles && Array.isArray(to.meta.roles)) {
+        const userRole = authStore.user?.role;
+        if (!userRole || !to.meta.roles.includes(userRole)) {
+          return next('/unauthorized');
+        }
+      }
     }
 
     setTimeout(() => {

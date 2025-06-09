@@ -50,10 +50,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useQuasar } from 'quasar';
+import { LocalStorage, useQuasar } from 'quasar';
 import { controlError } from '../../helpers/controlError';
-import { authRequest } from 'src/request';
+import { authRequest } from '../../request';
+import { useAuthStore } from '../../stores/auth';
+import { decryptedAES } from '../../helpers';
 
+const authStore = useAuthStore();
 const $q = useQuasar();
 const router = useRouter();
 
@@ -69,18 +72,24 @@ const form = ref({
 const handleLogin = async () => {
   loading.value = true;
   try {
-    const data = await authRequest.login(form.value);
+    await authRequest.login(form.value);
 
     $q.notify({
       type: 'positive',
       message: 'Inicio de sesión exitoso',
     });
 
+    const userData = await authRequest.getCurrentUser();
+
+    const token = decryptedAES(LocalStorage.getItem('token') as unknown as string);
+
+    authStore.setUser(userData!, token);
+
     await router.push({ name: 'home' });
 
     $q.notify({
       type: 'positive',
-      message: `Bienvenido, ${data.name}`,
+      message: `Bienvenido, ${userData?.name}`,
     });
   } catch (error) {
     controlError(error);

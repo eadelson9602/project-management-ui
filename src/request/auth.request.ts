@@ -1,16 +1,16 @@
 import { LocalStorage } from 'quasar';
 import { api } from 'boot/axios';
-import { encryptedAES, encryptJSON, decryptJSON, errorHandler } from 'src/helpers/';
+import { encryptedAES, encryptJSON, decryptJSON, errorHandler } from '../helpers/';
 import type { User } from '../models/user.models';
 import type { UserAuth } from '../models/auth.models';
 
 export const authRequest = {
   login: async (credentials: { email: string; password: string }) => {
     try {
-      const response = await api.post('/auth/login', credentials);
+      const response = await api.post<UserAuth>('/auth/login', credentials);
       if (response.data.token) {
         LocalStorage.set('token', encryptedAES(response.data.token));
-        LocalStorage.set('userAuth', encryptJSON(response.data));
+        LocalStorage.set('userAuth', encryptJSON(response.data as unknown as JSON));
         api.defaults.headers.common['x-access-token'] = response.data.token;
       }
       return response.data;
@@ -21,9 +21,9 @@ export const authRequest = {
 
   refreshToken: async () => {
     try {
-      const response = await api.post('/auth/refresh');
+      const response = await api.post<UserAuth>('/auth/refresh');
       LocalStorage.set('token', encryptedAES(response.data.token));
-      LocalStorage.set('userAuth', encryptJSON(response.data));
+      LocalStorage.set('userAuth', encryptJSON(response.data as unknown as JSON));
       api.defaults.headers.common['x-access-token'] = response.data.token;
       return response.data;
     } catch (error: unknown) {
@@ -55,7 +55,8 @@ export const authRequest = {
       const currentUser = decryptJSON(
         LocalStorage.getItem('userAuth') as string,
       ) as unknown as UserAuth;
-      const response = await api.get<User>(`/auth/users/find/${currentUser.id}`);
+      const response = await api.get<User>(`/users/find/${currentUser.id}`);
+
       return response.data;
     } catch (error: unknown) {
       errorHandler(error);
