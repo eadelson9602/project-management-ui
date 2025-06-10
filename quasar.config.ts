@@ -5,6 +5,10 @@ import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig((ctx) => {
+  const __URLAPI__ = ctx.dev
+    ? 'http://localhost:3000/api'
+    : 'https://web-production-4f8f1.up.railway.app/api';
+
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -54,7 +58,7 @@ export default defineConfig((ctx) => {
       // publicPath: '/',
       // analyze: true,
       env: {
-        __URLAPI__: 'http://localhost:3000/api',
+        __URLAPI__,
         JWT_SECRET_KEY:
           'a8de87090d25aad5d7d66630d1dfbf57f1d9228b6871bd1dfc4fb7cf5b84889ebd895f3701ef1c26d740ccf499f7260a1d6c14a50f02b8e5c5230bd181cca521',
         JWT_IV:

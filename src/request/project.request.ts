@@ -6,9 +6,7 @@ import { errorHandler } from '../helpers/';
 export const projectRequest = {
   getProjects: async (params: Filter) => {
     try {
-      const response = await api.get('/projects', {
-        params,
-      });
+      const response = await api.post('/projects', params);
       return response.data;
     } catch (error) {
       errorHandler(error);
