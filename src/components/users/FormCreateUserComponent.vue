@@ -1,42 +1,59 @@
 <template>
-  <q-page padding>
-    <q-card class="q-pa-lg q-mx-auto" style="max-width: 500px">
-      <q-card-section>
-        <div class="text-h6">{{ isEdit ? 'Editar Usuario' : 'Crear Usuario' }}</div>
-      </q-card-section>
-      <q-separator />
-      <q-card-section>
-        <q-form @submit.prevent="handleSubmit" class="q-gutter-md">
-          <q-input v-model="form.name" label="Nombre" :rules="[(val) => !!val || 'Requerido']" />
-          <q-input
-            v-model="form.email"
-            label="Email"
-            type="email"
-            :rules="[(val) => !!val || 'Requerido']"
-          />
-          <q-select
-            v-model="form.role"
-            :options="roles"
-            label="Rol"
-            :rules="[(val) => !!val || 'Requerido']"
-            emit-value
-            map-options
-          />
-          <q-input
-            v-if="!isEdit"
-            v-model="form.password"
-            label="Contraseña"
-            type="password"
-            :rules="[(val) => !!val || 'Requerido']"
-          />
-          <div class="row justify-end q-gutter-sm">
-            <q-btn label="Cancelar" flat @click="goBack" />
-            <q-btn :label="isEdit ? 'Actualizar' : 'Crear'" color="primary" type="submit" />
-          </div>
-        </q-form>
-      </q-card-section>
-    </q-card>
-  </q-page>
+  <q-form @submit.prevent="handleSubmit" class="row">
+    <div class="col-xs-12 q-pa-sm">
+      <q-input
+        outlined
+        dense
+        v-model="form.name"
+        label="Nombre"
+        :rules="[(val) => !!val || 'Requerido']"
+      />
+    </div>
+    <div class="col-xs-12 q-pa-sm">
+      <q-input
+        outlined
+        dense
+        v-model="form.email"
+        label="Email"
+        type="email"
+        :rules="[(val) => !!val || 'Requerido']"
+      />
+    </div>
+    <div class="col-xs-12 q-pa-sm">
+      <q-select
+        outlined
+        dense
+        v-model="form.role"
+        :options="roles"
+        label="Rol"
+        :rules="[(val) => !!val || 'Requerido']"
+        emit-value
+        map-options
+      />
+    </div>
+    <div class="col-xs-12 q-pa-sm">
+      <q-input
+        outlined
+        dense
+        v-if="!isEdit"
+        v-model="form.password"
+        label="Contraseña"
+        type="password"
+        :rules="[(val) => !!val || 'Requerido']"
+      />
+    </div>
+
+    <div class="col-xs-12 q-pa-sm row justify-between">
+      <q-btn no-caps label="Cancelar" color="warning" @click="goBack" />
+      <q-btn
+        no-caps
+        :loading="isLoading"
+        :label="isEdit ? 'Actualizar usuario' : 'Crear usuario'"
+        color="positive"
+        type="submit"
+      />
+    </div>
+  </q-form>
 </template>
 
 <script setup lang="ts">
@@ -106,6 +123,7 @@ const handleSubmit = async () => {
         email: form.value.email,
         role: form.value.role,
         password: form.value.password,
+        avatar: `https://avatar.iran.liara.run/username?username=${form.value.name}&bold=false&length=1`,
       });
 
       $q.notify({ type: 'positive', message: 'Usuario creado.' });

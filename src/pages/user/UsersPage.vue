@@ -1,38 +1,21 @@
 <template>
   <q-page padding>
-    <!-- Filtros -->
-    <div class="row q-col-gutter-md q-mb-md">
-      <div class="col-12 col-md-3">
-        <q-input v-model="filters.name" label="Nombre" dense outlined />
-      </div>
-      <div class="col-12 col-md-3">
-        <q-input v-model="filters.email" label="Email" dense outlined />
-      </div>
-      <div class="col-12 col-md-3">
-        <q-select
-          v-model="filters.role"
-          :options="['admin', 'manager', 'developer']"
-          label="Rol"
-          dense
-          outlined
-        />
-      </div>
-      <div class="col-12 col-md-3">
-        <q-select
-          v-model="filters.isActive"
-          :options="[true, false]"
-          label="Estado"
-          dense
-          outlined
-        />
-      </div>
-    </div>
-
     <!-- Botones de acción -->
     <div class="row q-mb-md">
-      <q-btn color="primary" label="Filtrar" @click="fetchUsers" class="q-mr-sm" />
-      <q-btn color="secondary" label="Limpiar filtros" @click="clearFilters" />
+      <q-btn color="positive" label="Agregar usuario" @click="dialogAddUser = true" />
     </div>
+
+    <q-dialog v-model="dialogAddUser" persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">{{ isEdit ? 'Editar Usuario' : 'Crear Usuario' }}</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <form-create-user-component />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
     <!-- Tabla -->
     <q-table
@@ -44,10 +27,50 @@
       @request="onRequest"
       :rows-per-page-options="[10, 20, 50]"
     >
+      <template v-slot:top>
+        <!-- Filtros -->
+        <div class="row q-col-gutter-md q-mb-md full-width">
+          <div class="col-12 col-sm-3 col-md-3">
+            <q-input v-model="filters.name" label="Nombre" dense outlined />
+          </div>
+          <div class="col-12 col-sm-3 col-md-3">
+            <q-input v-model="filters.email" label="Email" dense outlined />
+          </div>
+          <div class="col-12 col-sm-3 col-md-2">
+            <q-select
+              v-model="filters.role"
+              :options="['admin', 'manager', 'developer']"
+              label="Rol"
+              dense
+              outlined
+            />
+          </div>
+          <div class="col-12 col-sm-3 col-md-4">
+            <q-btn unelevated class="q-mx-xs" color="primary" label="Filtrar" @click="fetchUsers" />
+            <q-btn
+              unelevated
+              class="q-mx-xs"
+              color="secondary"
+              label="Limpiar filtros"
+              @click="clearFilters"
+            />
+            <q-btn unelevated class="q-mx-xs" color="positive" icon="refresh" @click="fetchUsers" />
+          </div>
+        </div>
+      </template>
       <template v-slot:body-cell-actions="props">
         <q-td>
-          <q-btn flat round color="primary" icon="edit" size="sm" @click="editUser(props.row)" />
           <q-btn
+            no-caps
+            flat
+            round
+            color="primary"
+            icon="edit"
+            size="sm"
+            @click="editUser(props.row)"
+          />
+          <q-btn
+            no-caps
             flat
             round
             color="negative"
@@ -67,6 +90,8 @@ import { ref, onMounted } from 'vue';
 import { usersRequest } from '../../request';
 import { controlError } from '../../helpers';
 import type { User } from '../../models/user.models';
+
+import { FormCreateUserComponent } from '../../components';
 
 // Definir las columnas de la tabla
 const columns = [
@@ -116,24 +141,24 @@ const pagination = ref({
   rowsPerPage: 10,
   rowsNumber: 0,
 });
+const dialogAddUser = ref(false);
+const isEdit = ref(false);
 
 // Filtros
 const filters = ref({
   name: '' as string | null,
   email: '' as string | null,
   role: '' as string | null,
-  isActive: null as boolean | null,
 });
 
 // Métodos
-async function fetchUsers() {
+const fetchUsers = async () => {
   try {
     loading.value = true;
     const filterObj: { name?: string; email?: string; role?: string; isActive?: boolean } = {};
     if (filters.value.name) filterObj.name = filters.value.name;
     if (filters.value.email) filterObj.email = filters.value.email;
     if (filters.value.role) filterObj.role = filters.value.role;
-    if (filters.value.isActive !== null) filterObj.isActive = filters.value.isActive;
 
     const sort = pagination.value.descending ? 'DESC' : 'ASC';
 
@@ -152,14 +177,13 @@ async function fetchUsers() {
   } finally {
     loading.value = false;
   }
-}
+};
 
 async function clearFilters() {
   filters.value = {
     name: '',
     email: '',
     role: '',
-    isActive: false,
   };
   await fetchUsers();
 }

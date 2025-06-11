@@ -19,38 +19,7 @@ interface PaginationOptions {
 export const usersRequest = {
   getAllUsers: async (options?: PaginationOptions): Promise<ResponseFilter<User[]>> => {
     try {
-      const params = new URLSearchParams();
-
-      // Agregar parámetros de paginación
-      if (options?.page) params.append('page', options.page.toString());
-      if (options?.limit) params.append('limit', options.limit.toString());
-      if (options?.sortOrder) params.append('sortOrder', options.sortOrder);
-
-      let endpoint = '/users';
-      const q: Record<string, string | boolean | undefined> = {};
-
-      // Determinar el endpoint basado en los filtros
-      if (options?.filters) {
-        if (options.filters.id) {
-          endpoint = `/users/find/${options.filters.id}`;
-        } else if (options.filters.isActive === false) {
-          endpoint = '/users/deleted';
-        } else {
-          // Construir el objeto de búsqueda para el backend
-          if (options.filters.name) q.name = options.filters.name;
-          if (options.filters.email) q.email = options.filters.email;
-          if (options.filters.role) q.role = options.filters.role;
-          if (options.filters.isActive !== undefined) q.isActive = options.filters.isActive;
-
-          if (Object.keys(q).length > 0) {
-            params.append('q', JSON.stringify(q));
-          }
-        }
-      }
-
-      const { data } = await api.get<ResponseFilter<User[]>>(endpoint, {
-        params: Object.fromEntries(params),
-      });
+      const { data } = await api.post<ResponseFilter<User[]>>('users', options);
 
       return data;
     } catch (error: unknown) {

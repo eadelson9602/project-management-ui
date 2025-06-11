@@ -37,20 +37,8 @@ export const sidebarConfig = {
       name: 'Usuarios',
       icon: 'people',
       path: '/users',
-      isExpanded: true,
+      isExpanded: false,
       roles: ['admin', 'manager'],
-      children: [
-        {
-          name: 'Lista de Usuarios',
-          path: '/users',
-          roles: ['admin', 'manager'],
-        },
-        {
-          name: 'Gestión de Usuarios',
-          path: '/users/manage',
-          roles: ['admin', 'manager'],
-        },
-      ],
     },
     {
       name: 'Perfil',

@@ -95,16 +95,6 @@ const routes: RouteRecordRaw[] = [
           roles: ['admin', 'manager'],
         },
       },
-      {
-        path: '/users/manage',
-        name: 'users_manage',
-        component: () => import('pages/user/ManageUserPage.vue'),
-        meta: {
-          title: 'Users',
-          requiresAuth: true,
-          roles: ['admin', 'manager'],
-        },
-      },
     ],
   },
 
