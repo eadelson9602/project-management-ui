@@ -4,6 +4,8 @@ import SidebarComponent from './global/SidebarComponent.vue';
 import CardDashboardComponent from './dashboard/CardDashboardComponent.vue';
 // User components
 import FormCreateUserComponent from './users/FormCreateUserComponent.vue';
+// Task components
+import FormCreateTaskComponent from './task/FormCreateTaskComponent.vue';
 
 export {
   RegisterFormComponent,
@@ -11,4 +13,5 @@ export {
   SidebarComponent,
   CardDashboardComponent,
   FormCreateUserComponent,
+  FormCreateTaskComponent,
 };

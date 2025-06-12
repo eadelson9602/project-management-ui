@@ -1,5 +1,12 @@
 <template>
   <q-page class="q-pa-md">
+    <q-dialog v-model="dialogCreateTask">
+      <q-card style="width: 450px; max-width: 80vw">
+        <q-card-section>
+          <form-create-task-component @create-task="createTask" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
     <q-table
       :rows="tasks"
       :columns="columns"
@@ -15,26 +22,7 @@
             icon="add"
             color="primary"
             label="Nueva Tarea"
-            @click="
-              editTask({
-                id: '',
-                title: '',
-                description: '',
-                status: 'todo',
-                priority: 'medium',
-                actualHours: 0,
-                projectId: '',
-                createdAt: '',
-                assignedTo: {
-                  id: '',
-                  name: '',
-                  email: '',
-                  role: '',
-                },
-                dueDate: '',
-                estimatedHours: 0,
-              })
-            "
+            @click="dialogCreateTask = true"
             class="q-ml-md"
           />
         </q-toolbar>
@@ -70,6 +58,7 @@ import { ref, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { taskRequest } from '../../request';
 import { controlError } from '../../helpers';
+import { FormCreateTaskComponent } from '../../components';
 import type { Task, TaskTableRequestProps } from '../../models/task.models';
 
 const $q = useQuasar();
@@ -77,6 +66,7 @@ const $q = useQuasar();
 // Estado
 const loading = ref(false);
 const tasks = ref<Task[]>([]);
+const dialogCreateTask = ref(false);
 
 // Columnas de la tabla
 const columns = [
@@ -105,7 +95,7 @@ const pagination = ref({
 
 // Métodos
 const fetchTasks = async (props: TaskTableRequestProps) => {
-  loading.value = true;
+  $q.loading.show({ message: 'Cargando tareas...' });
   try {
     const response = await taskRequest.getTasks({
       page: props.pagination.page,
@@ -117,13 +107,29 @@ const fetchTasks = async (props: TaskTableRequestProps) => {
   } catch (error) {
     controlError(error);
   } finally {
-    loading.value = false;
+    $q.loading.hide();
   }
 };
 
 const editTask = (task: Task) => {
   // Implementar edición de tarea
   console.log('Editar tarea:', task);
+};
+
+const createTask = async (task: Task) => {
+  try {
+    // Implementar creación de tarea
+    await taskRequest.createTask(task);
+
+    $q.notify({
+      type: 'positive',
+      message: 'Tarea creada exitosamente',
+    });
+
+    await fetchTasks({ pagination: pagination.value });
+  } catch (error) {
+    controlError(error);
+  }
 };
 
 const deleteTask = async (id: string) => {
