@@ -12,7 +12,7 @@
         </q-card-section>
         <q-separator />
         <q-card-section>
-          <form-create-user-component />
+          <form-create-user-component @on-cancel="dialogAddUser = false" @on-success="onSuccess" />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -93,6 +93,8 @@ import type { User } from '../../models/user.models';
 
 import { FormCreateUserComponent } from '../../components';
 
+const $q = useQuasar();
+
 // Definir las columnas de la tabla
 const columns = [
   {
@@ -169,7 +171,6 @@ const fetchUsers = async () => {
       filters: filterObj,
     });
 
-    console.log(response);
     users.value = response.data;
     pagination.value.rowsNumber = response.meta.totalItems;
   } catch (error) {
@@ -210,8 +211,6 @@ async function onRequest(requestProp: {
   await fetchUsers();
 }
 
-const $q = useQuasar();
-
 async function editUser(user: User) {
   try {
     const result = await usersRequest.updateUser(user.id!, user);
@@ -249,6 +248,11 @@ async function deleteUser(user: User) {
     });
   }
 }
+
+const onSuccess = async () => {
+  dialogAddUser.value = false;
+  await fetchUsers();
+};
 
 // Inicializar
 onMounted(async () => {

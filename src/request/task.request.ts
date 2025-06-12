@@ -5,7 +5,7 @@ import { errorHandler } from '../helpers/';
 export const taskRequest = {
   async getTasks(params?: Record<string, unknown>) {
     try {
-      const response = await api.get('/task', { params });
+      const response = await api.post('/tasks', params);
       return response.data;
     } catch (error) {
       errorHandler(error);

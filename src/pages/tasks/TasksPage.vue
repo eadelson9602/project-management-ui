@@ -40,14 +40,12 @@ import { useQuasar } from 'quasar';
 import { taskRequest } from '../../request';
 import { controlError } from '../../helpers';
 import type { Task, TaskTableRequestProps } from '../../models/task.models';
-import type { User } from '../../models/user.models';
 
 const $q = useQuasar();
 
 // Estado
 const loading = ref(false);
 const tasks = ref<Task[]>([]);
-const developers = ref<User[]>([]);
 
 // Columnas de la tabla
 const columns = [
@@ -89,20 +87,6 @@ const fetchTasks = async (props: TaskTableRequestProps) => {
     controlError(error);
   } finally {
     loading.value = false;
-  }
-};
-
-const fetchDevelopers = async () => {
-  try {
-    const response = await taskRequest.getTasks({
-      filters: JSON.stringify({ role: 'developer' }),
-    });
-    developers.value = response.data.map((task: Task) => ({
-      label: task.assignedTo?.name || 'Desarrollador no asignado',
-      value: task.assignedTo?.id,
-    }));
-  } catch (error) {
-    controlError(error);
   }
 };
 
@@ -154,6 +138,5 @@ const getStatusLabel = (status: TaskStatus) => {
 // Cargar datos iniciales
 onMounted(async () => {
   await fetchTasks({ pagination: pagination.value });
-  await fetchDevelopers();
 });
 </script>

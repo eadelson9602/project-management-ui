@@ -38,9 +38,17 @@
         v-if="!isEdit"
         v-model="form.password"
         label="Contraseña"
-        type="password"
+        :type="isPasswordVisible ? 'text' : 'password'"
         :rules="[(val) => !!val || 'Requerido']"
-      />
+      >
+        <template v-slot:append>
+          <q-icon
+            :name="isPasswordVisible ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="isPasswordVisible = !isPasswordVisible"
+          />
+        </template>
+      </q-input>
     </div>
 
     <div class="col-xs-12 q-pa-sm row justify-between">
@@ -57,8 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref, computed, onMounted, defineEmits } from 'vue';
+import { useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { controlError } from '../../helpers/';
 import { authRequest, usersRequest } from '../../request';
@@ -70,10 +78,11 @@ const roles = [
   { label: 'Developer', value: 'developer' },
 ];
 
+const emit = defineEmits(['onCancel', 'onSuccess']);
+
 // Router y Quasar
 const $q = useQuasar();
 const route = useRoute();
-const router = useRouter();
 
 // Detectar si es edición (por id en la ruta)
 const userId = computed(() => route.params.id as string | undefined);
@@ -86,6 +95,7 @@ const form = ref({
   role: '',
   password: '',
 });
+const isPasswordVisible = ref(false);
 
 // Estado de carga
 const isLoading = ref(false);
@@ -129,7 +139,7 @@ const handleSubmit = async () => {
       $q.notify({ type: 'positive', message: 'Usuario creado.' });
     }
 
-    await goBack();
+    emit('onSuccess');
   } catch (e) {
     controlError(e);
   } finally {
@@ -137,7 +147,7 @@ const handleSubmit = async () => {
   }
 };
 
-const goBack = async () => {
-  await router.push({ name: 'users' });
+const goBack = () => {
+  emit('onCancel');
 };
 </script>
