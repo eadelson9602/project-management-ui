@@ -15,7 +15,7 @@ export const taskRequest = {
 
   async getTaskById(id: string) {
     try {
-      const response = await api.get(`/task/find/${id}`);
+      const response = await api.get(`/tasks/find/${id}`);
       return response.data;
     } catch (error) {
       errorHandler(error);
@@ -25,7 +25,7 @@ export const taskRequest = {
 
   async createTask(data: Partial<Task>) {
     try {
-      const response = await api.post('/task/create', data);
+      const response = await api.post('/tasks/create', data);
       return response.data;
     } catch (error) {
       errorHandler(error);
@@ -35,7 +35,7 @@ export const taskRequest = {
 
   async updateTask(data: Partial<Task>) {
     try {
-      const response = await api.patch('/task/update', data);
+      const response = await api.patch('/tasks/update', data);
       return response.data;
     } catch (error) {
       errorHandler(error);
@@ -45,7 +45,7 @@ export const taskRequest = {
 
   async deleteTask(id: string) {
     try {
-      await api.delete(`/task/remove/${id}`);
+      await api.delete(`/tasks/delete/${id}`);
       return true;
     } catch (error) {
       errorHandler(error);

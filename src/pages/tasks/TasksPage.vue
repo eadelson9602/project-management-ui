@@ -8,6 +8,37 @@
       :pagination="pagination"
       @request="fetchTasks"
     >
+      <template v-slot:top>
+        <q-toolbar>
+          <q-toolbar-title>Tareas</q-toolbar-title>
+          <q-btn
+            icon="add"
+            color="primary"
+            label="Nueva Tarea"
+            @click="
+              editTask({
+                id: '',
+                title: '',
+                description: '',
+                status: 'todo',
+                priority: 'medium',
+                actualHours: 0,
+                projectId: '',
+                createdAt: '',
+                assignedTo: {
+                  id: '',
+                  name: '',
+                  email: '',
+                  role: '',
+                },
+                dueDate: '',
+                estimatedHours: 0,
+              })
+            "
+            class="q-ml-md"
+          />
+        </q-toolbar>
+      </template>
       <template v-slot:body-cell-status="props">
         <q-td :props="props">
           <q-badge :color="getStatusColor(props.row.status)">
